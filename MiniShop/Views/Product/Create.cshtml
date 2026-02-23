@@ -1,0 +1,73 @@
+@model Application.Products.Commands.CreateProducts.CreateProductCommand
+@{
+    ViewData["Title"] = "افزودن محصول جدید";
+}
+
+<div class="breadcrumb_area">
+  <div class="container">
+    <ul class="ms-breadcrumb">
+      <li><a asp-controller="Admin" asp-action="Index">داشبورد</a></li>
+      <li><a asp-controller="Product" asp-action="Index">محصولات</a></li>
+      <li>محصول جدید</li>
+    </ul>
+  </div>
+</div>
+
+<div class="pt-60 pb-60">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="form-card">
+          <h3>➕ افزودن محصول جدید</h3>
+          <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="ms-alert error"></div>
+
+            <div class="ms-form-group">
+              <label asp-for="Name" class="ms-label">نام محصول *</label>
+              <input asp-for="Name" class="ms-input" placeholder="نام محصول را وارد کنید">
+              <span asp-validation-for="Name" style="color:#e74c3c;font-size:12px"></span>
+            </div>
+
+            <div class="ms-form-group">
+              <label asp-for="Description" class="ms-label">توضیحات</label>
+              <textarea asp-for="Description" class="ms-textarea" placeholder="توضیحات محصول"></textarea>
+              <span asp-validation-for="Description" style="color:#e74c3c;font-size:12px"></span>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="ms-form-group">
+                  <label asp-for="Price" class="ms-label">قیمت (تومان) *</label>
+                  <input asp-for="Price" class="ms-input" type="number" step="1000" placeholder="مثلاً 150000">
+                  <span asp-validation-for="Price" style="color:#e74c3c;font-size:12px"></span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="ms-form-group">
+                  <label asp-for="Stock" class="ms-label">موجودی *</label>
+                  <input asp-for="Stock" class="ms-input" type="number" placeholder="تعداد در انبار">
+                  <span asp-validation-for="Stock" style="color:#e74c3c;font-size:12px"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="ms-form-group">
+              <label asp-for="CategoryId" class="ms-label">دسته‌بندی *</label>
+              <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="ms-select">
+                <option value="">-- انتخاب دسته‌بندی --</option>
+              </select>
+              <span asp-validation-for="CategoryId" style="color:#e74c3c;font-size:12px"></span>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:8px">
+              <button type="submit" class="ms-btn">💾 ذخیره محصول</button>
+              <a asp-controller="Product" asp-action="Index" class="ms-btn grey">انصراف</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }

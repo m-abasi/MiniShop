@@ -1,0 +1,111 @@
+@model Application.ViewModels.CheckoutViewModel
+@{
+    ViewData["Title"] = "نهایی کردن خرید";
+    var items = ViewBag.CartItems as List<Application.Cart.CartItem>;
+    decimal total = ViewBag.Total;
+}
+
+<div class="breadcrumb_area">
+  <div class="container">
+    <ul class="ms-breadcrumb">
+      <li><a asp-controller="Home" asp-action="Index">خانه</a></li>
+      <li><a asp-controller="Cart" asp-action="Index">سبد خرید</a></li>
+      <li>نهایی کردن خرید</li>
+    </ul>
+  </div>
+</div>
+
+<div class="pt-60 pb-60">
+  <div class="container">
+    <!-- Steps indicator -->
+    <div style="display:flex;justify-content:center;gap:0;margin-bottom:36px">
+      <div style="display:flex;align-items:center;gap:0">
+        <div style="width:32px;height:32px;background:#e74c3c;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">۱</div>
+        <span style="font-size:13px;font-weight:700;color:#e74c3c;margin:0 8px">سبد خرید</span>
+        <div style="width:50px;height:2px;background:#e74c3c"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0">
+        <div style="width:32px;height:32px;background:#e74c3c;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">۲</div>
+        <span style="font-size:13px;font-weight:700;color:#e74c3c;margin:0 8px">اطلاعات ارسال</span>
+        <div style="width:50px;height:2px;background:#ddd"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0">
+        <div style="width:32px;height:32px;background:#ddd;color:#999;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">۳</div>
+        <span style="font-size:13px;color:#aaa;margin:0 8px">تأیید سفارش</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Shipping form -->
+      <div class="col-lg-7">
+        <div class="form-card">
+          <h3>🚚 اطلاعات ارسال</h3>
+          <form asp-action="Checkout" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="ms-alert error"></div>
+
+            <div class="ms-form-group">
+              <label asp-for="ShippingAddress" class="ms-label">آدرس کامل *</label>
+              <input asp-for="ShippingAddress" class="ms-input" placeholder="خیابان، کوچه، پلاک، طبقه، واحد">
+              <span asp-validation-for="ShippingAddress" style="color:#e74c3c;font-size:12px"></span>
+            </div>
+
+            <div class="row">
+              <div class="col-md-7">
+                <div class="ms-form-group">
+                  <label asp-for="ShippingCity" class="ms-label">شهر *</label>
+                  <input asp-for="ShippingCity" class="ms-input" placeholder="نام شهر">
+                  <span asp-validation-for="ShippingCity" style="color:#e74c3c;font-size:12px"></span>
+                </div>
+              </div>
+              <div class="col-md-5">
+                <div class="ms-form-group">
+                  <label asp-for="ShippingZip" class="ms-label">کد پستی *</label>
+                  <input asp-for="ShippingZip" class="ms-input" placeholder="۱۰ رقم" dir="ltr">
+                  <span asp-validation-for="ShippingZip" style="color:#e74c3c;font-size:12px"></span>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:#f8f8f8;border-radius:6px;padding:14px;margin-bottom:20px;font-size:13px;color:#666">
+              <i class="fa fa-info-circle" style="color:#3498db;margin-left:6px"></i>
+              پس از ثبت سفارش، ظرف ۴۸ ساعت کاری با شما تماس می‌گیریم.
+            </div>
+
+            <button type="submit" class="ms-btn" style="width:100%;text-align:center;padding:14px;font-size:15px">
+              ✅ تأیید و ثبت سفارش — @total.ToString("N0") تومان
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Order summary -->
+      <div class="col-lg-5">
+        <div class="order_review">
+          <h3>📋 خلاصه سفارش</h3>
+          <table class="review_table">
+            <tbody>
+              @foreach (var item in items!) {
+                <tr>
+                  <td>@item.ProductName <span style="color:#999;font-size:12px">× @item.Quantity</span></td>
+                  <td style="text-align:left;color:#e74c3c;font-weight:700;white-space:nowrap">@item.Subtotal.ToString("N0") تومان</td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr>
+                <td>ارسال</td>
+                <td style="text-align:left;color:#27ae60;font-weight:700">رایگان</td>
+              </tr>
+              <tr>
+                <td style="font-weight:700;color:#333">جمع کل</td>
+                <td style="text-align:left;color:#e74c3c;font-weight:700;font-size:16px">@total.ToString("N0") تومان</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }

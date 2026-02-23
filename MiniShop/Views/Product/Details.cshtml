@@ -1,0 +1,82 @@
+@model Application.Products.Queries.GetProducts.ProductDto
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="breadcrumb_area">
+  <div class="container">
+    <ul class="ms-breadcrumb">
+      <li><a asp-controller="Home" asp-action="Index">خانه</a></li>
+      <li><a asp-controller="Product" asp-action="Index">فروشگاه</a></li>
+      <li>@Model.Name</li>
+    </ul>
+  </div>
+</div>
+
+<div class="product_details_area pt-60 pb-60">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-5 col-md-6">
+        <div class="product_thumbnail">
+          <div class="zoom-thumb">
+            <img src="~/assets/img/product/productbig1.jpg" alt="@Model.Name" style="width:100%;border-radius:8px;border:1px solid #eee">
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-7 col-md-6">
+        <div class="product_details_content">
+          <span class="cat_tag mb-8" style="font-size:13px">@Model.CategoryName</span>
+          <h2 style="font-size:24px;font-weight:700;color:#222;margin:10px 0 14px">@Model.Name</h2>
+
+          <div class="price_box mb-16">
+            <span class="current_price" style="font-size:26px">@Model.Price.ToString("N0") تومان</span>
+          </div>
+
+          <div style="margin-bottom:16px">
+            @if (Model.Stock == 0) {
+              <span class="stock_out" style="font-size:14px"><i class="fa fa-times-circle"></i> ناموجود</span>
+            } else if (Model.Stock <= 5) {
+              <span class="stock_low" style="font-size:14px"><i class="fa fa-exclamation-circle"></i> فقط @Model.Stock عدد باقی مانده</span>
+            } else {
+              <span class="stock_ok" style="font-size:14px"><i class="fa fa-check-circle"></i> موجود در انبار (@Model.Stock عدد)</span>
+            }
+          </div>
+
+          <div style="color:#666;line-height:1.9;margin-bottom:24px;font-size:14px">
+            @Model.Description
+          </div>
+
+          @if (Model.Stock > 0) {
+            <form asp-controller="Cart" asp-action="AddToCart" method="post">
+              @Html.AntiForgeryToken()
+              <input type="hidden" name="productId" value="@Model.Id"/>
+              <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <label style="font-size:13px;font-weight:700">تعداد:</label>
+                  <input name="quantity" type="number" value="1" min="1" max="@Model.Stock"
+                         style="width:70px;border:1px solid #ddd;border-radius:5px;padding:9px 10px;text-align:center;font-size:15px">
+                </div>
+                <button type="submit" class="ms-btn" style="padding:12px 30px">
+                  <i class="fa fa-shopping-bag" style="margin-left:8px"></i>افزودن به سبد خرید
+                </button>
+              </div>
+            </form>
+          } else {
+            <button class="ms-btn grey" disabled style="opacity:.6;cursor:not-allowed;padding:12px 30px">ناموجود</button>
+          }
+
+          @if (User.IsInRole("Admin")) {
+            <div style="margin-top:24px;padding-top:18px;border-top:1px solid #eee;display:flex;gap:10px">
+              <a asp-controller="Product" asp-action="Edit" asp-route-id="@Model.Id" class="ms-btn blue sm">✏ ویرایش محصول</a>
+              <form asp-controller="Product" asp-action="Delete" asp-route-id="@Model.Id" method="post"
+                    onsubmit="return confirm('این محصول حذف شود؟')">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="ms-btn sm" style="background:#e74c3c">🗑 حذف</button>
+              </form>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

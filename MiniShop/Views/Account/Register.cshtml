@@ -1,0 +1,48 @@
+@model Application.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "ثبت‌نام";
+}
+
+<div class="pt-60 pb-60" style="min-height:65vh;display:flex;align-items:center">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-5 col-md-7">
+        <div class="account_card">
+          <h3><i class="fa fa-user-plus" style="color:#e74c3c;margin-left:8px"></i>ایجاد حساب کاربری</h3>
+
+          <div asp-validation-summary="All" class="ms-alert error"></div>
+
+          <form asp-action="Register" method="post">
+            @Html.AntiForgeryToken()
+            <div class="ms-form-group">
+              <label asp-for="FullName" class="ms-label">نام و نام خانوادگی</label>
+              <input asp-for="FullName" class="ms-input" placeholder="نام کامل شما">
+              <span asp-validation-for="FullName" style="color:#e74c3c;font-size:12px"></span>
+            </div>
+            <div class="ms-form-group">
+              <label asp-for="Email" class="ms-label">آدرس ایمیل</label>
+              <input asp-for="Email" type="email" class="ms-input" placeholder="example@email.com" dir="ltr">
+              <span asp-validation-for="Email" style="color:#e74c3c;font-size:12px"></span>
+            </div>
+            <div class="ms-form-group">
+              <label asp-for="Password" class="ms-label">رمز عبور</label>
+              <input asp-for="Password" type="password" class="ms-input" placeholder="حداقل 6 کاراکتر + عدد + حرف بزرگ" dir="ltr">
+              <span asp-validation-for="Password" style="color:#e74c3c;font-size:12px"></span>
+            </div>
+            <div class="ms-form-group">
+              <label asp-for="ConfirmPassword" class="ms-label">تکرار رمز عبور</label>
+              <input asp-for="ConfirmPassword" type="password" class="ms-input" dir="ltr">
+              <span asp-validation-for="ConfirmPassword" style="color:#e74c3c;font-size:12px"></span>
+            </div>
+            <button type="submit" class="ms-btn" style="width:100%;text-align:center">ثبت‌نام</button>
+          </form>
+
+          <div style="margin-top:20px;text-align:center;font-size:13px;color:#888">
+            قبلاً ثبت‌نام کرده‌اید؟ <a asp-controller="Account" asp-action="Login" style="color:#e74c3c;font-weight:700">وارد شوید</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }

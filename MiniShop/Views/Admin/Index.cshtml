@@ -1,0 +1,80 @@
+@model Application.Admin.Queries.DashboardStatsDto
+@{
+    ViewData["Title"] = "داشبورد مدیریت";
+}
+
+<div class="breadcrumb_area">
+  <div class="container">
+    <ul class="ms-breadcrumb">
+      <li>مدیریت</li>
+      <li>داشبورد</li>
+    </ul>
+  </div>
+</div>
+
+<div class="pt-60 pb-60">
+  <div class="container">
+    <div class="section_title">
+      <h2>⚙ داشبورد مدیریت</h2>
+    </div>
+
+    <!-- Stats -->
+    <div class="row mb-24">
+      <div class="col-lg-3 col-md-6">
+        <div class="stat_card sc-green">
+          <div class="snum">@Model.TotalProducts</div>
+          <div class="slbl">محصولات</div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <div class="stat_card sc-blue">
+          <div class="snum">@Model.TotalOrders</div>
+          <div class="slbl">کل سفارش‌ها</div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <div class="stat_card sc-orange">
+          <div class="snum">@Model.PendingOrders</div>
+          <div class="slbl">در انتظار بررسی</div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <div class="stat_card sc-purple">
+          <div class="snum">@Model.TotalUsers</div>
+          <div class="slbl">کاربران ثبت‌نام‌شده</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-24">
+      <div class="col-md-6">
+        <div style="background:#fff;border:1px solid #eee;border-radius:10px;padding:24px">
+          <div style="font-size:13px;color:#888;margin-bottom:6px">درآمد کل</div>
+          <div style="font-size:2rem;font-weight:800;color:#27ae60">@Model.TotalRevenue.ToString("N0") تومان</div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div style="background:#fff;border:@(Model.LowStockProducts > 0 ? "2px solid #e74c3c" : "1px solid #eee");border-radius:10px;padding:24px">
+          <div style="font-size:13px;color:#888;margin-bottom:6px">محصولات کم‌موجودی (≤ ۵)</div>
+          <div style="font-size:2rem;font-weight:800;color:@(Model.LowStockProducts > 0 ? "#e74c3c" : "#aaa")">
+            @Model.LowStockProducts محصول
+          </div>
+          @if (Model.LowStockProducts > 0) {
+            <div style="font-size:12px;color:#e74c3c;margin-top:6px">⚠ نیاز به تأمین موجودی</div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick actions -->
+    <div style="background:#fff;border:1px solid #eee;border-radius:10px;padding:24px">
+      <h4 style="font-size:15px;font-weight:700;margin-bottom:16px;color:#333">عملیات سریع</h4>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a asp-controller="Product" asp-action="Create" class="ms-btn">+ محصول جدید</a>
+        <a asp-controller="Category" asp-action="Create" class="ms-btn grey">+ دسته‌بندی جدید</a>
+        <a asp-controller="Category" asp-action="Index" class="ms-btn blue">مدیریت دسته‌بندی‌ها</a>
+        <a asp-controller="Admin"   asp-action="Orders" class="ms-btn" style="background:#8e44ad">مدیریت سفارش‌ها</a>
+      </div>
+    </div>
+  </div>
+</div>

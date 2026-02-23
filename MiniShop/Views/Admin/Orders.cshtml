@@ -1,0 +1,87 @@
+@model List<Application.Orders.Queries.GetOrders.OrderDto>
+@using Domain.Entities
+@{
+    ViewData["Title"] = "مدیریت سفارش‌ها";
+}
+
+<div class="breadcrumb_area">
+  <div class="container">
+    <ul class="ms-breadcrumb">
+      <li><a asp-controller="Admin" asp-action="Index">داشبورد</a></li>
+      <li>سفارش‌ها</li>
+    </ul>
+  </div>
+</div>
+
+<div class="pt-60 pb-60">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+      <div class="section_title" style="margin:0"><h2>مدیریت سفارش‌ها</h2></div>
+      <a asp-controller="Admin" asp-action="Index" class="ms-btn grey sm">← داشبورد</a>
+    </div>
+
+    @if (!Model.Any()) {
+      <div class="empty_state">
+        <i class="fa fa-shopping-cart"></i>
+        <h4>هیچ سفارشی وجود ندارد</h4>
+      </div>
+    } else {
+      <table class="data_table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>مشتری</th>
+            <th>تاریخ</th>
+            <th>اقلام</th>
+            <th>مبلغ کل</th>
+            <th>وضعیت</th>
+            <th>جزئیات</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (var o in Model) {
+            var cls = o.Status switch {
+              OrderStatus.Pending    => "s-pending",
+              OrderStatus.Processing => "s-processing",
+              OrderStatus.Shipped    => "s-shipped",
+              OrderStatus.Delivered  => "s-delivered",
+              OrderStatus.Cancelled  => "s-cancelled",
+              _ => "s-pending"
+            };
+            var lbl = o.Status switch {
+              OrderStatus.Pending    => "در انتظار",
+              OrderStatus.Processing => "در حال پردازش",
+              OrderStatus.Shipped    => "ارسال شده",
+              OrderStatus.Delivered  => "تحویل داده شده",
+              OrderStatus.Cancelled  => "لغو شده",
+              _ => o.Status.ToString()
+            };
+            <tr>
+              <td><strong style="color:#e74c3c">#@o.Id</strong></td>
+              <td style="font-size:12px">@o.UserEmail</td>
+              <td style="font-size:12px">@o.CreatedAt.ToString("yyyy/MM/dd HH:mm")</td>
+              <td>@o.Items.Count قلم</td>
+              <td style="font-weight:700">@o.TotalPrice.ToString("N0") تومان</td>
+              <td>
+                <form asp-action="UpdateOrderStatus" method="post">
+                  @Html.AntiForgeryToken()
+                  <input type="hidden" name="orderId" value="@o.Id">
+                  <select name="newStatus" onchange="this.form.submit()"
+                          style="border:1px solid #ddd;border-radius:4px;padding:5px 8px;font-size:12px;cursor:pointer">
+                    @foreach (OrderStatus s in Enum.GetValues(typeof(OrderStatus))) {
+                      var sl = s switch { OrderStatus.Pending=>"در انتظار",OrderStatus.Processing=>"در حال پردازش",OrderStatus.Shipped=>"ارسال شده",OrderStatus.Delivered=>"تحویل داده شده",OrderStatus.Cancelled=>"لغو شده",_=>s.ToString() };
+                      <option value="@((int)s)" selected="@(s == o.Status)">@sl</option>
+                    }
+                  </select>
+                </form>
+              </td>
+              <td>
+                <a asp-action="OrderDetails" asp-route-id="@o.Id" class="ms-btn sm blue">جزئیات</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>

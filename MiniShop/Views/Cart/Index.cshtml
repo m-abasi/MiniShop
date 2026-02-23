@@ -1,0 +1,105 @@
+@model List<Application.Cart.CartItem>
+@{
+    ViewData["Title"] = "سبد خرید";
+    decimal total = ViewBag.Total;
+}
+
+<div class="breadcrumb_area">
+  <div class="container">
+    <ul class="ms-breadcrumb">
+      <li><a asp-controller="Home" asp-action="Index">خانه</a></li>
+      <li>سبد خرید</li>
+    </ul>
+  </div>
+</div>
+
+<div class="cart_area pt-60 pb-60">
+  <div class="container">
+
+    @if (TempData["Success"] != null) { <div class="ms-alert success mb-16">@TempData["Success"]</div> }
+    @if (TempData["Error"]   != null) { <div class="ms-alert error mb-16">@TempData["Error"]</div> }
+
+    @if (!Model.Any()) {
+      <div class="empty_state">
+        <i class="fa fa-shopping-bag"></i>
+        <h4>سبد خرید شما خالی است</h4>
+        <a asp-controller="Product" asp-action="Index" class="ms-btn">ادامه خرید</a>
+      </div>
+    } else {
+      <div class="row">
+        <div class="col-lg-8">
+          <table class="cart_table">
+            <thead>
+              <tr>
+                <th>محصول</th>
+                <th>قیمت واحد</th>
+                <th>تعداد</th>
+                <th>جمع</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach (var item in Model) {
+                <tr>
+                  <td><strong>@item.ProductName</strong></td>
+                  <td>@item.UnitPrice.ToString("N0") تومان</td>
+                  <td>
+                    <form asp-controller="Cart" asp-action="UpdateQuantity" method="post">
+                      @Html.AntiForgeryToken()
+                      <input type="hidden" name="productId" value="@item.ProductId">
+                      <input name="quantity" type="number" value="@item.Quantity" min="1" class="qty_input"
+                             onchange="this.form.submit()">
+                    </form>
+                  </td>
+                  <td style="color:#e74c3c;font-weight:700">@item.Subtotal.ToString("N0") تومان</td>
+                  <td>
+                    <form asp-controller="Cart" asp-action="RemoveItem" method="post">
+                      @Html.AntiForgeryToken()
+                      <input type="hidden" name="productId" value="@item.ProductId">
+                      <button type="submit" class="rm-btn" title="حذف"><i class="fa fa-trash"></i></button>
+                    </form>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+
+          <div style="display:flex;gap:10px;margin-top:16px">
+            <a asp-controller="Product" asp-action="Index" class="ms-btn grey sm">← ادامه خرید</a>
+            <form asp-controller="Cart" asp-action="Clear" method="post">
+              @Html.AntiForgeryToken()
+              <button type="submit" class="ms-btn sm" style="background:#999"
+                      onclick="return confirm('سبد خرید پاک شود؟')">
+                🗑 پاک کردن سبد
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="totals_box">
+            <h3>جمع سفارش</h3>
+            <div class="totals_row">
+              <span>جمع محصولات</span>
+              <span class="amt">@total.ToString("N0") تومان</span>
+            </div>
+            <div class="totals_row">
+              <span>هزینه ارسال</span>
+              <span style="color:#27ae60;font-weight:700">رایگان</span>
+            </div>
+            <div class="totals_row total">
+              <span>جمع کل</span>
+              <span class="amt">@total.ToString("N0") تومان</span>
+            </div>
+            <div style="margin-top:20px">
+              <a asp-controller="Order" asp-action="Checkout" class="ms-btn"
+                 style="width:100%;text-align:center;display:block;padding:14px">
+                ✅ ادامه و نهایی کردن خرید
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

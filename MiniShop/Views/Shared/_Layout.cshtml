@@ -1,0 +1,439 @@
+@using Application.Cart
+@inject ICartService CartService
+@{
+    int cartCount = 0;
+    decimal cartTotal = 0;
+    List<CartItem> cartItems = new();
+    try {
+        cartItems = CartService.GetCart();
+        cartTotal = CartService.GetTotal();
+        cartCount = CartService.GetItemCount();
+    } catch { }
+}
+<!DOCTYPE html>
+<html class="no-js" lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>@ViewData["Title"] - مینی شاپ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="~/assets/img/favicon.ico">
+    <link rel="stylesheet" href="~/assets/css/plugins.css">
+    <link rel="stylesheet" href="~/assets/css/style.css">
+    <style>
+        /* Disable sticky nav */
+        .sticky-header.sticky{position:static!important;box-shadow:none!important}
+        .sticky_header_area{display:none!important}
+        /* Top bar */
+        .header_top{background:#1c1c2e;padding:8px 0}
+        .header_top_left p,.header_top_right ul li a,.htr-text{color:#bbb;font-size:13px;margin:0}
+        .header_top_right ul{display:flex;list-style:none;margin:0;padding:0;gap:18px;justify-content:flex-end;align-items:center}
+        .header_top_right ul li a:hover{color:#fff}
+        .htr-logout{background:none;border:none;color:#bbb;cursor:pointer;font-size:13px;padding:0}
+        .htr-logout:hover{color:#fff}
+        /* Logo row */
+        .header_middle{padding:14px 0;border-bottom:1px solid #eee}
+        /* Nav */
+        .header_bottom{background:#fff;border-bottom:2px solid #f0f0f0;position:static!important}
+        .main_menu nav>ul{display:flex;list-style:none;margin:0;padding:0}
+        .main_menu nav>ul>li{position:relative}
+        .main_menu nav>ul>li>a{display:block;padding:14px 16px;font-size:14px;font-weight:600;color:#333;transition:color .2s}
+        .main_menu nav>ul>li>a:hover{color:#e74c3c}
+        .main_menu nav>ul>li .sub_menu{display:none;position:absolute;top:100%;right:0;background:#fff;min-width:190px;box-shadow:0 6px 24px rgba(0,0,0,.12);border-top:2px solid #e74c3c;z-index:9999;list-style:none;padding:6px 0;margin:0}
+        .main_menu nav>ul>li:hover .sub_menu{display:block}
+        .main_menu nav>ul>li .sub_menu li a{display:block;padding:10px 16px;font-size:13px;color:#444}
+        .main_menu nav>ul>li .sub_menu li a:hover{background:#fdf0f0;color:#e74c3c}
+        /* Mini cart */
+        .mini_cart_wrapper{position:relative;display:inline-block}
+        .cart_quantity{position:absolute;top:-7px;left:-7px;background:#e74c3c;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;line-height:18px;text-align:center;font-weight:700}
+        .mini_cart{display:none;position:absolute;left:0;top:calc(100% + 12px);width:300px;background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 8px 30px rgba(0,0,0,.12);z-index:9999}
+        .mini_cart_wrapper:hover .mini_cart{display:block}
+        .cart_item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid #f5f5f5}
+        .cart_info{flex:1}
+        .cart_info a{font-size:13px;color:#333;display:block;margin-bottom:3px}
+        .cart_info p{font-size:12px;color:#888;margin:0}
+        .cart_info p span{color:#e74c3c;font-weight:700}
+        .cart_remove button{background:none;border:none;color:#ccc;cursor:pointer;font-size:16px;padding:0}
+        .cart_remove button:hover{color:#e74c3c}
+        .mini_cart_table{padding:11px 14px;border-bottom:1px solid #f5f5f5}
+        .cart_total{display:flex;justify-content:space-between;font-size:14px}
+        .cart_total .price{color:#e74c3c;font-weight:700}
+        .mini_cart_footer{display:flex;gap:8px;padding:11px 14px}
+        .mini_cart_footer .cart_button{flex:1}
+        .mini_cart_footer .cart_button a{display:block;text-align:center;padding:9px;background:#333;color:#fff!important;border-radius:4px;font-size:13px;font-weight:600}
+        .mini_cart_footer .cart_button:last-child a{background:#e74c3c}
+        .empty_cart_msg{padding:22px 14px;text-align:center;font-size:13px;color:#999}
+        /* Buttons */
+        .ms-btn{display:inline-block;background:#e74c3c;color:#fff!important;padding:11px 26px;border-radius:5px;font-size:14px;font-weight:700;border:none;cursor:pointer;transition:background .2s;text-decoration:none}
+        .ms-btn:hover{background:#c0392b}
+        .ms-btn.grey{background:#666}
+        .ms-btn.grey:hover{background:#444}
+        .ms-btn.green{background:#27ae60}
+        .ms-btn.green:hover{background:#1e8449}
+        .ms-btn.blue{background:#2980b9}
+        .ms-btn.blue:hover{background:#1f6391}
+        .ms-btn.sm{padding:7px 16px;font-size:12px}
+        /* Forms */
+        .ms-label{display:block;font-size:13px;font-weight:700;color:#444;margin-bottom:6px}
+        .ms-input,.ms-select,.ms-textarea{width:100%;border:1px solid #ddd;border-radius:5px;padding:11px 14px;font-size:14px;outline:none;transition:border-color .2s;background:#fff;font-family:inherit;box-sizing:border-box}
+        .ms-input:focus,.ms-select:focus,.ms-textarea:focus{border-color:#e74c3c}
+        .ms-textarea{resize:vertical;min-height:100px}
+        .ms-form-group{margin-bottom:18px}
+        .form-card{background:#fff;border:1px solid #eee;border-radius:10px;padding:30px}
+        .form-card h3{font-size:18px;font-weight:700;margin-bottom:22px;padding-bottom:12px;border-bottom:2px solid #e74c3c}
+        /* Alerts */
+        .ms-alert{padding:12px 16px;border-radius:6px;margin-bottom:16px;font-size:14px}
+        .ms-alert.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+        .ms-alert.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
+        /* Product cards */
+        .single_product{margin-bottom:28px}
+        .single_product figure{border:1px solid #eee;border-radius:8px;overflow:hidden;background:#fff;transition:box-shadow .25s,transform .25s;margin:0}
+        .single_product figure:hover{box-shadow:0 8px 30px rgba(0,0,0,.10);transform:translateY(-3px)}
+        .product_thumb{position:relative;overflow:hidden}
+        .product_thumb img{width:100%;height:210px;object-fit:cover;display:block;transition:transform .35s}
+        .single_product figure:hover .product_thumb img{transform:scale(1.05)}
+        .label_product{position:absolute;top:10px;right:10px;z-index:2}
+        .label_sale{background:#e74c3c;color:#fff;font-size:11px;padding:3px 9px;border-radius:3px}
+        /* Add to cart - always visible below image */
+        .card_add_area{background:#f8f8f8;padding:0}
+        .card_add_area form,.card_add_area-inner{margin:0}
+        .btn-add-to-cart{width:100%;padding:10px 0;background:#333;color:#fff;border:none;cursor:pointer;font-size:13px;font-weight:700;transition:background .2s;display:block;text-align:center}
+        .btn-add-to-cart:hover{background:#e74c3c}
+        .btn-out-of-stock{width:100%;padding:10px 0;background:#ddd;color:#999;border:none;font-size:13px;font-weight:700;cursor:not-allowed;text-align:center;display:block}
+        /* Product info */
+        .product_content.grid_content{padding:13px 14px}
+        .product_name.grid_name{font-size:14px;margin:6px 0 4px;line-height:1.4}
+        .product_name.grid_name a{color:#333}
+        .product_name.grid_name a:hover{color:#e74c3c}
+        .current_price{font-size:15px;font-weight:700;color:#e74c3c}
+        .cat_tag{font-size:11px;color:#999;background:#f5f5f5;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:4px}
+        .stock_ok{color:#27ae60;font-size:12px}
+        .stock_low{color:#e67e22;font-size:12px}
+        .stock_out{color:#bbb;font-size:12px}
+        /* Admin inline actions */
+        .card_admin_actions{display:flex;gap:6px;padding:8px 14px;background:#fafafa;border-top:1px solid #eee}
+        .card_admin_actions a,.card_admin_actions button{flex:1;padding:6px 4px;font-size:12px;font-weight:700;text-align:center;border-radius:4px;border:none;cursor:pointer;text-decoration:none}
+        /* Sidebar */
+        .sidebar_widget{background:#fafafa;border:1px solid #eee;border-radius:8px;padding:20px;margin-bottom:24px}
+        .sidebar_widget h3{font-size:14px;font-weight:700;color:#222;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #e74c3c}
+        .widget_categories{list-style:none;padding:0;margin:0}
+        .widget_categories li a{display:block;padding:9px 4px;color:#555;font-size:13px;border-bottom:1px solid #f0f0f0;transition:color .15s}
+        .widget_categories li a:hover,.widget_categories li.sel a{color:#e74c3c;font-weight:700}
+        .widget_search{display:flex;gap:6px}
+        .widget_search input{flex:1;border:1px solid #ddd;padding:9px 12px;border-radius:4px;font-size:13px;outline:none}
+        .widget_search button{background:#e74c3c;color:#fff;border:none;padding:9px 14px;border-radius:4px;cursor:pointer}
+        /* Cart table */
+        .cart_table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+        .cart_table thead th{background:#333;color:#fff;padding:13px 16px;font-size:13px;font-weight:600;text-align:right}
+        .cart_table tbody td{padding:13px 16px;border-bottom:1px solid #f5f5f5;font-size:14px;vertical-align:middle}
+        .qty_input{width:65px;border:1px solid #ddd;border-radius:4px;padding:7px 10px;text-align:center;font-size:14px}
+        .rm-btn{background:none;border:none;color:#ccc;font-size:20px;cursor:pointer;line-height:1}
+        .rm-btn:hover{color:#e74c3c}
+        /* Totals box */
+        .totals_box{background:#fafafa;border:1px solid #eee;border-radius:8px;padding:24px}
+        .totals_box h3{font-size:16px;font-weight:700;margin-bottom:16px}
+        .totals_row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee;font-size:14px}
+        .totals_row.total{border-bottom:none;font-weight:700;font-size:16px}
+        .totals_row .amt{color:#e74c3c;font-weight:700}
+        /* Data table */
+        .data_table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+        .data_table thead th{background:#1c1c2e;color:#fff;padding:13px 16px;font-size:13px;font-weight:600;text-align:right}
+        .data_table tbody tr{border-bottom:1px solid #f5f5f5;transition:background .15s}
+        .data_table tbody tr:hover{background:#fafafa}
+        .data_table tbody td{padding:12px 16px;font-size:13px;color:#444;vertical-align:middle}
+        .s-badge{display:inline-block;padding:4px 11px;border-radius:11px;font-size:12px;font-weight:700}
+        .s-pending{background:#fff3cd;color:#856404}
+        .s-processing{background:#d1ecf1;color:#0c5460}
+        .s-shipped{background:#cce5ff;color:#004085}
+        .s-delivered{background:#d4edda;color:#155724}
+        .s-cancelled{background:#f8d7da;color:#721c24}
+        /* Stat cards */
+        .stat_card{border-radius:10px;padding:22px 20px;color:#fff;margin-bottom:20px}
+        .stat_card .snum{font-size:2.4rem;font-weight:800;line-height:1}
+        .stat_card .slbl{font-size:13px;opacity:.85;margin-top:6px}
+        .sc-green{background:linear-gradient(135deg,#27ae60,#2ecc71)}
+        .sc-blue{background:linear-gradient(135deg,#2980b9,#3498db)}
+        .sc-orange{background:linear-gradient(135deg,#e67e22,#f39c12)}
+        .sc-purple{background:linear-gradient(135deg,#8e44ad,#9b59b6)}
+        .sc-red{background:linear-gradient(135deg,#c0392b,#e74c3c)}
+        /* Breadcrumb */
+        .breadcrumb_area{background:#f8f8f8;padding:13px 0;border-bottom:1px solid #eee}
+        .ms-breadcrumb{display:flex;list-style:none;margin:0;padding:0;gap:4px;font-size:13px}
+        .ms-breadcrumb li a{color:#777}
+        .ms-breadcrumb li a:hover{color:#e74c3c}
+        .ms-breadcrumb li:not(:last-child)::after{content:" › ";color:#ccc;margin-right:2px}
+        .ms-breadcrumb li:last-child{color:#e74c3c}
+        /* Account */
+        .account_card{background:#fff;border:1px solid #eee;border-radius:10px;padding:36px;box-shadow:0 2px 20px rgba(0,0,0,.06)}
+        .account_card h3{font-size:22px;font-weight:700;margin-bottom:24px;padding-bottom:14px;border-bottom:2px solid #e74c3c}
+        /* Section title */
+        .section_title{margin-bottom:28px}
+        .section_title h2{font-size:20px;font-weight:700;color:#222;display:inline-block;padding-bottom:8px;border-bottom:2px solid #e74c3c}
+        /* Order summary */
+        .order_review{background:#fafafa;border:1px solid #eee;border-radius:10px;padding:24px}
+        .order_review h3{font-size:16px;font-weight:700;margin-bottom:14px}
+        .review_table{width:100%;font-size:13px;border-collapse:collapse}
+        .review_table td{padding:9px 4px;border-bottom:1px solid #f0f0f0}
+        .review_table tfoot td{font-weight:700;font-size:15px;color:#e74c3c;border-top:2px solid #eee;padding-top:12px}
+        /* Empty state */
+        .empty_state{text-align:center;padding:70px 20px}
+        .empty_state i{font-size:60px;color:#e0e0e0;display:block;margin-bottom:18px}
+        .empty_state h4{font-size:18px;color:#999;margin-bottom:16px}
+        /* Spacing */
+        .mt-8{margin-top:8px}.mt-16{margin-top:16px}.mt-24{margin-top:24px}.mt-32{margin-top:32px}
+        .mb-8{margin-bottom:8px}.mb-16{margin-bottom:16px}.mb-24{margin-bottom:24px}
+        .pt-60{padding-top:60px}.pb-60{padding-bottom:60px}
+        /* Footer */
+        .footer_widgets{background:#1c1c2e;margin-top:60px}
+        .footer_top{padding:46px 0 28px}
+        .footer_logo img{max-height:40px;margin-bottom:14px}
+        .footer_contact p{color:#aaa;font-size:13px;line-height:1.9;margin-bottom:4px}
+        .footer_contact p span{color:#ddd;font-weight:600}
+        .footer_contact p a{color:#bbb}
+        .widgets_container h3{color:#fff;font-size:14px;font-weight:700;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #2c2c4a}
+        .footer_menu ul{list-style:none;padding:0;margin:0}
+        .footer_menu ul li a{color:#aaa;font-size:13px;display:block;padding:5px 0;transition:color .2s}
+        .footer_menu ul li a:hover{color:#e74c3c}
+        .footer_social_link ul{display:flex;list-style:none;padding:0;margin:0;gap:8px}
+        .footer_social_link ul li a{width:34px;height:34px;border-radius:50%;background:#252545;color:#aaa;display:flex;align-items:center;justify-content:center;font-size:14px;transition:background .2s,color .2s}
+        .footer_social_link ul li a:hover{background:#e74c3c;color:#fff}
+        .footer_bottom{background:#111128;padding:15px 0;border-top:1px solid #252545}
+        .copyright_area p{color:#666;font-size:13px;margin:0}
+        .footer_payment{text-align:left}
+        .footer_payment img{max-height:28px;filter:brightness(.45)}
+    </style>
+</head>
+<body>
+
+<!--Offcanvas menu-->
+<div class="off_canvars_overlay"></div>
+<div class="Offcanvas_menu">
+  <div class="container"><div class="row"><div class="col-12">
+    <div class="canvas_open"><a href="javascript:void(0)"><i class="ion-navicon"></i></a></div>
+    <div class="Offcanvas_menu_wrapper">
+      <div class="canvas_close"><a href="javascript:void(0)"><i class="ion-android-close"></i></a></div>
+      <div class="support_info"><p>تلفن: <a class="ltr-text" href="tel:+989123456789">+(98) 123 456 789</a></p></div>
+      <div id="menu" class="text-left">
+        <ul class="offcanvas_main_menu">
+          <li><a asp-controller="Home" asp-action="Index">خانه</a></li>
+          <li><a asp-controller="Product" asp-action="Index">فروشگاه</a></li>
+          <li><a asp-controller="Cart" asp-action="Index">سبد خرید</a></li>
+          @if (User.Identity!.IsAuthenticated) {
+            <li><a asp-controller="Order" asp-action="MyOrders">سفارش‌های من</a></li>
+          }
+          @if (User.IsInRole("Admin")) {
+            <li><a asp-controller="Admin" asp-action="Index">داشبورد</a></li>
+            <li><a asp-controller="Product" asp-action="Create">+ محصول جدید</a></li>
+            <li><a asp-controller="Category" asp-action="Index">دسته‌بندی‌ها</a></li>
+            <li><a asp-controller="Admin" asp-action="Orders">مدیریت سفارش‌ها</a></li>
+          }
+        </ul>
+      </div>
+    </div>
+  </div></div></div>
+</div>
+
+<header class="header_area">
+  <!-- Top bar -->
+  <div class="header_top">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-5">
+          <p class="htr-text">پشتیبانی: <a class="ltr-text" href="tel:+989123456789" style="color:#bbb">+(98) 123 456 789</a></p>
+        </div>
+        <div class="col-lg-7">
+          <div class="header_top_right">
+            <ul>
+              @if (User.Identity!.IsAuthenticated) {
+                <li style="color:#bbb;font-size:13px">سلام <strong style="color:#fff">@User.Identity.Name</strong></li>
+                <li><a asp-controller="Order" asp-action="MyOrders">سفارش‌های من</a></li>
+                @if (User.IsInRole("Admin")) {
+                  <li><a asp-controller="Admin" asp-action="Index" style="color:#f1c40f;font-weight:700">⚙ مدیریت</a></li>
+                }
+                <li>
+                  <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="htr-logout">خروج</button>
+                  </form>
+                </li>
+              } else {
+                <li><a asp-controller="Account" asp-action="Login">ورود</a></li>
+                <li><a asp-controller="Account" asp-action="Register">ثبت‌نام</a></li>
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logo + Search + Cart -->
+  <div class="header_middle">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-3 col-md-4">
+          <div class="logo">
+            <a asp-controller="Home" asp-action="Index"><img src="~/assets/img/logo/logo.png" alt="مینی شاپ"></a>
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-5">
+          <div class="search_container">
+            <form asp-controller="Product" asp-action="Index" method="get">
+              <div class="search_box">
+                <input name="search" placeholder="جستجوی محصول ..." type="text" value="@Context.Request.Query["search"]">
+                <button type="submit">جستجو</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-3">
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:20px">
+            <div class="mini_cart_wrapper">
+              <a href="javascript:void(0)" style="font-size:22px;color:#333;display:inline-block;position:relative">
+                <i class="fa fa-shopping-bag"></i>
+                <span class="cart_quantity">@cartCount</span>
+              </a>
+              <div class="mini_cart">
+                @if (!cartItems.Any()) {
+                  <p class="empty_cart_msg"><i class="fa fa-shopping-bag" style="font-size:28px;display:block;margin-bottom:6px"></i>سبد خرید خالی است</p>
+                } else {
+                  <div class="cart_items_container">
+                    @foreach (var item in cartItems) {
+                      <div class="cart_item">
+                        <div class="cart_info">
+                          <a href="#">@item.ProductName</a>
+                          <p>@item.Quantity × <span>@item.UnitPrice.ToString("N0") تومان</span></p>
+                        </div>
+                        <div class="cart_remove">
+                          <form asp-controller="Cart" asp-action="RemoveItem" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@item.ProductId"/>
+                            <button type="submit" title="حذف"><i class="ion-android-close"></i></button>
+                          </form>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                  <div class="mini_cart_table">
+                    <div class="cart_total">
+                      <span>جمع کل:</span>
+                      <span class="price">@cartTotal.ToString("N0") تومان</span>
+                    </div>
+                  </div>
+                  <div class="mini_cart_footer">
+                    <div class="cart_button"><a asp-controller="Cart" asp-action="Index">سبد خرید</a></div>
+                    <div class="cart_button"><a asp-controller="Order" asp-action="Checkout">پرداخت</a></div>
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="canvas_open"><a href="javascript:void(0)" style="font-size:24px;color:#333"><i class="ion-navicon"></i></a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main nav (NO sticky-header class) -->
+  <div class="header_bottom">
+    <div class="container">
+      <div class="main_menu">
+        <nav>
+          <ul>
+            <li><a asp-controller="Home" asp-action="Index">خانه</a></li>
+            <li><a asp-controller="Product" asp-action="Index">فروشگاه</a></li>
+            <li><a asp-controller="Cart" asp-action="Index">سبد خرید</a></li>
+            @if (User.Identity.IsAuthenticated) {
+              <li><a asp-controller="Order" asp-action="MyOrders">سفارش‌های من</a></li>
+            }
+            @if (User.IsInRole("Admin")) {
+              <li>
+                <a href="#">مدیریت <i class="fa fa-angle-down"></i></a>
+                <ul class="sub_menu">
+                  <li><a asp-controller="Admin" asp-action="Index">داشبورد</a></li>
+                  <li><a asp-controller="Product" asp-action="Create">+ محصول جدید</a></li>
+                  <li><a asp-controller="Product" asp-action="Index">لیست محصولات</a></li>
+                  <li><a asp-controller="Category" asp-action="Index">دسته‌بندی‌ها</a></li>
+                  <li><a asp-controller="Admin" asp-action="Orders">مدیریت سفارش‌ها</a></li>
+                </ul>
+              </li>
+            }
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+@RenderBody()
+
+<footer class="footer_widgets">
+  <div class="footer_top">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 col-md-6">
+          <div class="widgets_container contact_us">
+            <div class="footer_logo"><a asp-controller="Home" asp-action="Index"><img src="~/assets/img/logo/logo.png" alt="مینی شاپ"></a></div>
+            <div class="footer_contact">
+              <p>فروشگاه آنلاین مینی شاپ — خرید آسان، تحویل سریع.</p>
+              <p><span>آدرس:</span> تهران، خیابان ولیعصر</p>
+              <p><span>موبایل:</span> <a class="ltr-text" href="tel:+989123456789">+(98) 123 456 789</a></p>
+              <p><span>ایمیل:</span> <a href="#">support@minishop.com</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-6 col-sm-6">
+          <div class="widgets_container widget_menu">
+            <h3>دسترسی سریع</h3>
+            <div class="footer_menu"><ul>
+              <li><a asp-controller="Home" asp-action="Index">خانه</a></li>
+              <li><a asp-controller="Product" asp-action="Index">فروشگاه</a></li>
+              <li><a asp-controller="Cart" asp-action="Index">سبد خرید</a></li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-6 col-sm-6">
+          <div class="widgets_container widget_menu">
+            <h3>حساب کاربری</h3>
+            <div class="footer_menu"><ul>
+              @if (User.Identity.IsAuthenticated) {
+                <li><a asp-controller="Order" asp-action="MyOrders">سفارش‌های من</a></li>
+              } else {
+                <li><a asp-controller="Account" asp-action="Login">ورود</a></li>
+                <li><a asp-controller="Account" asp-action="Register">ثبت‌نام</a></li>
+              }
+            </ul></div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="widgets_container newsletter">
+            <h3>ما را دنبال کنید</h3>
+            <div class="footer_social_link"><ul>
+              <li><a href="#"><i class="fa fa-instagram"></i></a></li>
+              <li><a href="#"><i class="fa fa-telegram"></i></a></li>
+              <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+            </ul></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer_bottom">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 col-md-6">
+          <div class="copyright_area"><p>© @DateTime.Now.Year مینی شاپ — تمامی حقوق محفوظ است.</p></div>
+        </div>
+        <div class="col-lg-6 col-md-6">
+          <div class="footer_payment"><img src="~/assets/img/icon/payment.png" alt="پرداخت"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="~/assets/js/plugins.js"></script>
+<script src="~/assets/js/main.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

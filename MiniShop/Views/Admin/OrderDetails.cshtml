@@ -1,0 +1,71 @@
+@model Application.Orders.Queries.GetOrders.OrderDto
+@using Domain.Entities
+@{
+    ViewData["Title"] = $"سفارش #{Model.Id}";
+}
+
+<div class="breadcrumb_area">
+  <div class="container">
+    <ul class="ms-breadcrumb">
+      <li><a asp-controller="Admin" asp-action="Index">داشبورد</a></li>
+      <li><a asp-controller="Admin" asp-action="Orders">سفارش‌ها</a></li>
+      <li>سفارش #@Model.Id</li>
+    </ul>
+  </div>
+</div>
+
+<div class="pt-60 pb-60">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="form-card">
+          <h3>📦 سفارش #@Model.Id</h3>
+          <table style="width:100%;font-size:14px;border-collapse:collapse;margin-bottom:20px">
+            <tr><td style="padding:10px 0;border-bottom:1px solid #f5f5f5;color:#888;width:140px">مشتری</td><td style="padding:10px 0;border-bottom:1px solid #f5f5f5;font-weight:600">@Model.UserEmail</td></tr>
+            <tr><td style="padding:10px 0;border-bottom:1px solid #f5f5f5;color:#888">تاریخ ثبت</td><td style="padding:10px 0;border-bottom:1px solid #f5f5f5">@Model.CreatedAt.ToString("yyyy/MM/dd HH:mm")</td></tr>
+            <tr><td style="padding:10px 0;border-bottom:1px solid #f5f5f5;color:#888">آدرس</td><td style="padding:10px 0;border-bottom:1px solid #f5f5f5">@Model.ShippingAddress، @Model.ShippingCity — @Model.ShippingZip</td></tr>
+            <tr><td style="padding:10px 0;color:#888">جمع کل</td><td style="padding:10px 0;font-weight:700;font-size:16px;color:#e74c3c">@Model.TotalPrice.ToString("N0") تومان</td></tr>
+          </table>
+
+          <h4 style="font-size:15px;font-weight:700;margin-bottom:14px">اقلام سفارش</h4>
+          <table class="cart_table">
+            <thead><tr><th>محصول</th><th>تعداد</th><th>قیمت واحد</th><th>جمع</th></tr></thead>
+            <tbody>
+              @foreach (var item in Model.Items) {
+                <tr>
+                  <td>@item.ProductName</td>
+                  <td>@item.Quantity</td>
+                  <td>@item.UnitPrice.ToString("N0") تومان</td>
+                  <td style="color:#e74c3c;font-weight:700">@item.Subtotal.ToString("N0") تومان</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="form-card">
+          <h3>تغییر وضعیت</h3>
+          <form asp-action="UpdateOrderStatus" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="orderId" value="@Model.Id">
+            <div class="ms-form-group">
+              <label class="ms-label">وضعیت فعلی</label>
+              <select name="newStatus" class="ms-select">
+                @foreach (OrderStatus s in Enum.GetValues(typeof(OrderStatus))) {
+                  var sl = s switch { OrderStatus.Pending=>"در انتظار",OrderStatus.Processing=>"در حال پردازش",OrderStatus.Shipped=>"ارسال شده",OrderStatus.Delivered=>"تحویل داده شده",OrderStatus.Cancelled=>"لغو شده",_=>s.ToString() };
+                  <option value="@((int)s)" selected="@(s == Model.Status)">@sl</option>
+                }
+              </select>
+            </div>
+            <button type="submit" class="ms-btn" style="width:100%;text-align:center">بروزرسانی وضعیت</button>
+          </form>
+          <div style="margin-top:14px">
+            <a asp-action="Orders" class="ms-btn grey sm" style="width:100%;text-align:center;display:block">← بازگشت به لیست</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

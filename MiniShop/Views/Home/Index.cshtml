@@ -1,0 +1,95 @@
+@{
+    ViewData["Title"] = "خانه";
+}
+
+<div class="slider_area">
+  <div class="slider_active owl-carousel">
+    <div class="single_slider d_flex align-items-center slider_bg_1">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 col-md-8">
+            <div class="slider_content">
+              <span>جدیدترین محصولات</span>
+              <h1>بهترین انتخاب<br>برای خرید آنلاین</h1>
+              <p>محصولات باکیفیت با قیمت مناسب، تحویل سریع به سراسر کشور.</p>
+              <a asp-controller="Product" asp-action="Index" class="button">همین الان خرید کن</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="single_slider d_flex align-items-center slider_bg_2">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 col-md-8">
+            <div class="slider_content">
+              <span>آفرهای ویژه</span>
+              <h1>تخفیف‌های استثنایی<br>فقط امروز</h1>
+              <p>هر روز پیشنهادهای جدید — از دست ندهید!</p>
+              <a asp-controller="Product" asp-action="Index" class="button">مشاهده آفرها</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="service_section pb-60px mt-55px">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="service_single">
+          <div class="service_icon"><i class="fa fa-truck" style="font-size:36px;color:#e74c3c"></i></div>
+          <div class="service_content">
+            <h3>ارسال سریع</h3>
+            <p>تحویل در سراسر کشور ظرف ۴۸ ساعت</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="service_single">
+          <div class="service_icon"><i class="fa fa-undo" style="font-size:36px;color:#e74c3c"></i></div>
+          <div class="service_content">
+            <h3>بازگشت آسان</h3>
+            <p>۷ روز ضمانت بازگشت بدون سوال</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="service_single">
+          <div class="service_icon"><i class="fa fa-lock" style="font-size:36px;color:#e74c3c"></i></div>
+          <div class="service_content">
+            <h3>پرداخت امن</h3>
+            <p>درگاه پرداخت معتبر و رمزگذاری شده</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="service_single">
+          <div class="service_icon"><i class="fa fa-headphones" style="font-size:36px;color:#e74c3c"></i></div>
+          <div class="service_content">
+            <h3>پشتیبانی ۲۴/۷</h3>
+            <p>همیشه آماده پاسخگویی هستیم</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="product_area pb-60px">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="section_title text-center">
+          <h2>به فروشگاه مینی شاپ خوش آمدید</h2>
+          <p style="color:#888;margin-top:10px">جدیدترین و باکیفیت‌ترین محصولات را پیدا کنید</p>
+          <div class="mt-24">
+            <a asp-controller="Product" asp-action="Index" class="ms-btn">مشاهده همه محصولات</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

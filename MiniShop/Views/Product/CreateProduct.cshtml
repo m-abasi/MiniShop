@@ -1,0 +1,29 @@
+﻿@using Domain.Entities
+@model Product
+
+<h2>Create Product (Test DB)</h2>
+
+<form asp-controller="Product" asp-action="CreateProduct" method="post">
+    <div>
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+    </div>
+    <div>
+        <label asp-for="Description"></label>
+        <input asp-for="Description" />
+    </div>
+    <div>
+        <label asp-for="Price"></label>
+        <input asp-for="Price" />
+    </div>
+    <div>
+        <label asp-for="Stock"></label>
+        <input asp-for="Stock" />
+    </div>
+    <div>
+        <label asp-for="CategoryId"></label>
+        <input asp-for="CategoryId" />
+    </div>
+
+    <button type="submit">Create</button>
+</form>

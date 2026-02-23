@@ -1,0 +1,43 @@
+@model Application.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "ورود به حساب";
+}
+
+<div class="pt-60 pb-60" style="min-height:65vh;display:flex;align-items:center">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-5 col-md-7">
+        <div class="account_card">
+          <h3><i class="fa fa-sign-in" style="color:#e74c3c;margin-left:8px"></i>ورود به حساب کاربری</h3>
+
+          <div asp-validation-summary="All" class="ms-alert error"></div>
+
+          <form asp-action="Login" method="post">
+            @Html.AntiForgeryToken()
+            <div class="ms-form-group">
+              <label asp-for="Email" class="ms-label">آدرس ایمیل</label>
+              <input asp-for="Email" type="email" class="ms-input" placeholder="example@email.com" dir="ltr">
+              <span asp-validation-for="Email" style="color:#e74c3c;font-size:12px"></span>
+            </div>
+            <div class="ms-form-group">
+              <label asp-for="Password" class="ms-label">رمز عبور</label>
+              <input asp-for="Password" type="password" class="ms-input" placeholder="رمز عبور" dir="ltr">
+              <span asp-validation-for="Password" style="color:#e74c3c;font-size:12px"></span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+              <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+                <input asp-for="RememberMe" type="checkbox"> مرا به خاطر بسپار
+              </label>
+            </div>
+            <button type="submit" class="ms-btn" style="width:100%;text-align:center">ورود</button>
+          </form>
+
+          <div style="margin-top:20px;text-align:center;font-size:13px;color:#888">
+            حساب ندارید؟ <a asp-controller="Account" asp-action="Register" style="color:#e74c3c;font-weight:700">ثبت‌نام کنید</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }

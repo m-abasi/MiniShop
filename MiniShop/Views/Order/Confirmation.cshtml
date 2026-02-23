@@ -1,0 +1,45 @@
+@model Application.Orders.Queries.GetOrders.OrderDto
+@{
+    ViewData["Title"] = "سفارش ثبت شد";
+}
+
+<div class="pt-60 pb-60">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7 text-center">
+        <div style="background:#fff;border:1px solid #eee;border-radius:12px;padding:44px 36px;box-shadow:0 2px 20px rgba(0,0,0,.06)">
+          <div style="width:80px;height:80px;background:#27ae60;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+            <i class="fa fa-check" style="font-size:36px;color:#fff"></i>
+          </div>
+          <h2 style="font-size:24px;font-weight:700;color:#222;margin-bottom:8px">سفارش با موفقیت ثبت شد!</h2>
+          <p style="color:#888;font-size:15px;margin-bottom:8px">از خرید شما سپاسگزاریم.</p>
+          <p style="font-size:15px">شماره سفارش: <strong style="color:#e74c3c;font-size:18px">#@Model.Id</strong></p>
+
+          <div style="background:#f8f8f8;border-radius:8px;padding:20px;margin:24px 0;text-align:right">
+            <table style="width:100%;font-size:13px;border-collapse:collapse">
+              @foreach (var item in Model.Items) {
+                <tr>
+                  <td style="padding:7px 0;border-bottom:1px solid #eee">@item.ProductName × @item.Quantity</td>
+                  <td style="padding:7px 0;border-bottom:1px solid #eee;text-align:left;color:#e74c3c;font-weight:700">@item.Subtotal.ToString("N0") تومان</td>
+                </tr>
+              }
+              <tr>
+                <td style="padding:10px 0;font-weight:700">آدرس ارسال</td>
+                <td style="padding:10px 0;text-align:left;font-size:12px;color:#666">@Model.ShippingAddress،<br>@Model.ShippingCity — @Model.ShippingZip</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 0;font-weight:700;font-size:15px">جمع کل</td>
+                <td style="padding:10px 0;text-align:left;font-weight:700;font-size:16px;color:#e74c3c">@Model.TotalPrice.ToString("N0") تومان</td>
+              </tr>
+            </table>
+          </div>
+
+          <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
+            <a asp-controller="Order" asp-action="MyOrders" class="ms-btn">سفارش‌های من</a>
+            <a asp-controller="Product" asp-action="Index" class="ms-btn grey">ادامه خرید</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

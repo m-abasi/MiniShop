@@ -1,0 +1,70 @@
+@model Application.Products.Commands.UpdateProduct.UpdateProductCommand
+@{
+    ViewData["Title"] = "ویرایش محصول";
+}
+
+<div class="breadcrumb_area">
+  <div class="container">
+    <ul class="ms-breadcrumb">
+      <li><a asp-controller="Admin" asp-action="Index">داشبورد</a></li>
+      <li><a asp-controller="Product" asp-action="Index">محصولات</a></li>
+      <li>ویرایش</li>
+    </ul>
+  </div>
+</div>
+
+<div class="pt-60 pb-60">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="form-card">
+          <h3>✏ ویرایش محصول</h3>
+          <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden">
+            <div asp-validation-summary="All" class="ms-alert error"></div>
+
+            <div class="ms-form-group">
+              <label class="ms-label">نام محصول *</label>
+              <input asp-for="Name" class="ms-input">
+              <span asp-validation-for="Name" style="color:#e74c3c;font-size:12px"></span>
+            </div>
+
+            <div class="ms-form-group">
+              <label class="ms-label">توضیحات</label>
+              <textarea asp-for="Description" class="ms-textarea"></textarea>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="ms-form-group">
+                  <label class="ms-label">قیمت (تومان) *</label>
+                  <input asp-for="Price" class="ms-input" type="number" step="1000">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="ms-form-group">
+                  <label class="ms-label">موجودی *</label>
+                  <input asp-for="Stock" class="ms-input" type="number">
+                </div>
+              </div>
+            </div>
+
+            <div class="ms-form-group">
+              <label class="ms-label">دسته‌بندی *</label>
+              <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="ms-select">
+                <option value="">-- انتخاب دسته‌بندی --</option>
+              </select>
+            </div>
+
+            <div style="display:flex;gap:10px">
+              <button type="submit" class="ms-btn">💾 ذخیره تغییرات</button>
+              <a asp-controller="Product" asp-action="Index" class="ms-btn grey">انصراف</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }

@@ -1,0 +1,156 @@
+@model List<Application.Products.Queries.GetProducts.ProductDto>
+@{
+    ViewData["Title"] = "فروشگاه";
+    var search   = Context.Request.Query["search"].ToString();
+    var category = Context.Request.Query["category"].ToString();
+    var categories = Model.Select(p => p.CategoryName).Distinct().OrderBy(c => c).ToList();
+    var filtered = Model
+        .Where(p => string.IsNullOrEmpty(search) || p.Name.Contains(search, StringComparison.OrdinalIgnoreCase) || p.Description.Contains(search, StringComparison.OrdinalIgnoreCase))
+        .Where(p => string.IsNullOrEmpty(category) || p.CategoryName == category)
+        .ToList();
+}
+
+<div class="breadcrumb_area">
+  <div class="container">
+    <ul class="ms-breadcrumb">
+      <li><a asp-controller="Home" asp-action="Index">خانه</a></li>
+      <li>فروشگاه</li>
+    </ul>
+  </div>
+</div>
+
+<div class="shop_area pt-60 pb-60">
+  <div class="container">
+    <div class="row">
+
+      <!-- Sidebar -->
+      <div class="col-lg-3 col-md-4">
+
+        @if (User.IsInRole("Admin"))
+        {
+          <div class="sidebar_widget" style="background:#1c1c2e;border-color:#2c2c4a">
+            <h3 style="border-color:#e74c3c;color:#fff">⚙ ابزار مدیریت</h3>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <a asp-controller="Product" asp-action="Create" class="ms-btn" style="text-align:center">+ افزودن محصول جدید</a>
+              <a asp-controller="Category" asp-action="Create" class="ms-btn grey" style="text-align:center">+ افزودن دسته‌بندی</a>
+              <a asp-controller="Category" asp-action="Index" class="ms-btn blue" style="text-align:center">مدیریت دسته‌بندی‌ها</a>
+              <a asp-controller="Admin" asp-action="Index" class="ms-btn green" style="text-align:center">داشبورد مدیریت</a>
+            </div>
+          </div>
+        }
+
+        <div class="sidebar_widget">
+          <h3>جستجو</h3>
+          <form asp-controller="Product" asp-action="Index" method="get">
+            <div class="widget_search">
+              <input name="search" value="@search" placeholder="نام محصول ..." type="text">
+              <input type="hidden" name="category" value="@category">
+              <button type="submit"><i class="fa fa-search"></i></button>
+            </div>
+          </form>
+        </div>
+
+        <div class="sidebar_widget">
+          <h3>دسته‌بندی‌ها</h3>
+          <ul class="widget_categories">
+            <li class="@(string.IsNullOrEmpty(category) ? "sel" : "")">
+              <a asp-controller="Product" asp-action="Index" asp-route-search="@search">همه محصولات</a>
+            </li>
+            @foreach (var cat in categories) {
+              <li class="@(cat == category ? "sel" : "")">
+                <a asp-controller="Product" asp-action="Index" asp-route-category="@cat" asp-route-search="@search">@cat</a>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+
+      <!-- Products -->
+      <div class="col-lg-9 col-md-8">
+
+        @if (TempData["Success"] != null) { <div class="ms-alert success">@TempData["Success"]</div> }
+        @if (TempData["Error"]   != null) { <div class="ms-alert error">@TempData["Error"]</div> }
+
+        <!-- Toolbar -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid #f0f0f0">
+          <span style="color:#888;font-size:13px">نمایش <strong style="color:#333">@filtered.Count</strong> محصول</span>
+          @if (User.IsInRole("Admin")) {
+            <a asp-controller="Product" asp-action="Create" class="ms-btn sm">+ محصول جدید</a>
+          }
+        </div>
+
+        @if (!filtered.Any()) {
+          <div class="empty_state">
+            <i class="fa fa-search"></i>
+            <h4>محصولی یافت نشد</h4>
+            <a asp-controller="Product" asp-action="Index" class="ms-btn">نمایش همه</a>
+          </div>
+        } else {
+          <div class="row">
+            @foreach (var p in filtered) {
+              <div class="col-lg-4 col-md-6 col-sm-6">
+                <div class="single_product">
+                  <figure>
+                    <div class="product_thumb">
+                      <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id">
+                        <img src="~/assets/img/product/product1.jpg" alt="@p.Name">
+                      </a>
+                      @if (p.Stock == 0) {
+                        <div class="label_product"><span class="label_sale">ناموجود</span></div>
+                      } else if (p.Stock <= 5) {
+                        <div class="label_product"><span class="label_sale">تعداد محدود</span></div>
+                      }
+                    </div>
+
+                    <!-- Add to cart always visible -->
+                    <div class="card_add_area">
+                      @if (p.Stock > 0) {
+                        <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                          @Html.AntiForgeryToken()
+                          <input type="hidden" name="productId" value="@p.Id"/>
+                          <input type="hidden" name="quantity" value="1"/>
+                          <button type="submit" class="btn-add-to-cart">
+                            <i class="fa fa-shopping-bag" style="margin-left:6px"></i>افزودن به سبد
+                          </button>
+                        </form>
+                      } else {
+                        <span class="btn-out-of-stock">ناموجود</span>
+                      }
+                    </div>
+
+                    <div class="product_content grid_content">
+                      <span class="cat_tag">@p.CategoryName</span>
+                      <h3 class="product_name grid_name">
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id">@p.Name</a>
+                      </h3>
+                      <div class="price_box">
+                        <span class="current_price">@p.Price.ToString("N0") تومان</span>
+                      </div>
+                      <div>
+                        @if (p.Stock == 0) { <span class="stock_out">ناموجود</span> }
+                        else if (p.Stock <= 5) { <span class="stock_low">فقط @p.Stock عدد باقی</span> }
+                        else { <span class="stock_ok">موجود (@p.Stock)</span> }
+                      </div>
+                    </div>
+
+                    @if (User.IsInRole("Admin")) {
+                      <div class="card_admin_actions">
+                        <a asp-controller="Product" asp-action="Edit" asp-route-id="@p.Id"
+                           style="background:#3498db;color:#fff">✏ ویرایش</a>
+                        <form asp-controller="Product" asp-action="Delete" asp-route-id="@p.Id" method="post"
+                              onsubmit="return confirm('محصول «@p.Name» حذف شود؟')">
+                          @Html.AntiForgeryToken()
+                          <button type="submit" style="background:#e74c3c;color:#fff;width:100%">🗑 حذف</button>
+                        </form>
+                      </div>
+                    }
+                  </figure>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
