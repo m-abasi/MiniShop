@@ -4,45 +4,64 @@
 }
 
 <div class="breadcrumb_area">
-  <div class="container">
-    <ul class="ms-breadcrumb">
-      <li><a asp-controller="Admin" asp-action="Index">داشبورد</a></li>
-      <li>دسته‌بندی‌ها</li>
-    </ul>
-  </div>
+    <div class="container">
+        <ul class="ms-breadcrumb">
+            <li><a asp-controller="Admin" asp-action="Index">داشبورد</a></li>
+            <li>دسته‌بندی‌ها</li>
+        </ul>
+    </div>
 </div>
 
 <div class="pt-60 pb-60">
-  <div class="container">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
-      <div class="section_title" style="margin:0"><h2>دسته‌بندی‌ها</h2></div>
-      <a asp-action="Create" class="ms-btn">+ دسته‌بندی جدید</a>
-    </div>
+    <div class="container">
 
-    @if (!Model.Any()) {
-      <div class="empty_state">
-        <i class="fa fa-folder-open"></i>
-        <h4>هیچ دسته‌بندی‌ای وجود ندارد</h4>
-        <a asp-action="Create" class="ms-btn">+ اولین دسته‌بندی را بسازید</a>
-      </div>
-    } else {
-      <table class="data_table">
-        <thead>
-          <tr><th>#</th><th>نام دسته‌بندی</th><th>عملیات</th></tr>
-        </thead>
-        <tbody>
-          @foreach (var c in Model) {
-            <tr>
-              <td style="color:#aaa;font-size:12px">@c.Id</td>
-              <td><strong>@c.Name</strong></td>
-              <td>
-                <a asp-controller="Product" asp-action="Index" asp-route-category="@c.Name"
-                   class="ms-btn sm blue">مشاهده محصولات</a>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    }
-  </div>
+        @if (TempData["Error"] != null)
+        {
+            <div class="ms-alert error" style="margin-bottom:20px">
+                ⚠️ @TempData["Error"]
+            </div>
+        }
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+            <div class="section_title" style="margin:0"><h2>دسته‌بندی‌ها</h2></div>
+            <a asp-action="Create" class="ms-btn">+ دسته‌بندی جدید</a>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="empty_state">
+                <i class="fa fa-folder-open"></i>
+                <h4>هیچ دسته‌بندی‌ای وجود ندارد</h4>
+                <a asp-action="Create" class="ms-btn">+ اولین دسته‌بندی را بسازید</a>
+            </div>
+        }
+        else
+        {
+            <table class="data_table">
+                <thead>
+                    <tr><th>#</th><th>نام دسته‌بندی</th><th>عملیات</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Model)
+                    {
+                        <tr>
+                            <td style="color:#aaa;font-size:12px">@c.Id</td>
+                            <td><strong>@c.Name</strong></td>
+                            <td style="display:flex;gap:8px;flex-wrap:wrap">
+                                <a asp-controller="Product" asp-action="Index" asp-route-category="@c.Name"
+                                   class="ms-btn sm blue">مشاهده محصولات</a>
+                                <a asp-action="Edit" asp-route-id="@c.Id"
+                                   class="ms-btn sm">✏️ ویرایش</a>
+                                <form asp-action="Delete" asp-route-id="@c.Id" method="post" style="margin:0"
+                                      onsubmit="return confirm('آیا از حذف دسته‌بندی «@c.Name» مطمئن هستید؟');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="ms-btn sm red">🗑️ حذف</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
 </div>

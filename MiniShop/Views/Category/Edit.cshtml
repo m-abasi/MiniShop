@@ -1,0 +1,38 @@
+﻿@model Application.Categories.Queries.GetCategories.CategoryDto
+@{
+    ViewData["Title"] = "ویرایش دسته‌بندی";
+}
+
+<div class="breadcrumb_area">
+    <div class="container">
+        <ul class="ms-breadcrumb">
+            <li><a asp-controller="Admin" asp-action="Index">داشبورد</a></li>
+            <li><a asp-controller="Category" asp-action="Index">دسته‌بندی‌ها</a></li>
+            <li>ویرایش</li>
+        </ul>
+    </div>
+</div>
+
+<div class="pt-60 pb-60">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="form-card">
+                    <h3>✏️ ویرایش دسته‌بندی</h3>
+                    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="All" class="ms-alert error"></div>
+                        <div class="ms-form-group">
+                            <label class="ms-label">نام دسته‌بندی *</label>
+                            <input name="name" class="ms-input" value="@Model.Name" required>
+                        </div>
+                        <div style="display:flex;gap:10px">
+                            <button type="submit" class="ms-btn">💾 ذخیره</button>
+                            <a asp-action="Index" class="ms-btn grey">انصراف</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
